@@ -33,6 +33,8 @@ but first load its address to another register that we manipulate at will.
 
 
 #### Results
+Those were obtained on the i7 (see i7.png for the system setup)
+
 |                              |  mean  | median | stddev |
 |------------------------------|--------|--------|--------|
 |ASM\_blank                    | 2.3e-06| 2.0e-06| 1.1e-06|
