@@ -1,5 +1,6 @@
 # perlAssembly
 
+<<<<<<< HEAD
 This is probably one of the things that should never be allowed to exist, but why not use Perl and its capabilities to inline foreign code, to FAFO with assembly without a build system? Everything in a single file! In the process one may find ways to use Perl to enhance NASM and vice versa. But for now, I make no such claims : I am just using the perlAssembly git repo to illustrate how one can use Perl to drive (and learn to code!) assembly programs from a single file. 
 
 ## x86-64 examples
@@ -37,6 +38,9 @@ ForLoop                    1.9e-02   1.9e-02   2.6e-04
 ListUtil                   4.5e-03   4.5e-03   1.4e-04
 PDL\_w\_alloc                2.1e-02   2.1e-02   6.7e-04
 PDL\_wo\_alloc               9.2e-04   9.0e-04   3.9e-05
+=======
+This is probably one of the things that should never be allowed to exist, but why not use Perl and its capabilities to inline foreign code, to FAFO with assembly without a build system? Everything in a single file! In the process one will find ways to use Perl to enhance NASM and vice versa.
+>>>>>>> d7e5ff97cdec0b7b0e2b2a02cdfad66c252cb1ee
 
 ### Disclaimer
 The code here is NOT meant to be portable. I code in Linux and in x86-64, so if you are looking into Window's ABI or ARM, you will be disappointed. But as my knowledge of ARM assembly grows, I intend to rewrite some examples in Arm assembly!
