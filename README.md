@@ -37,6 +37,8 @@ Those were obtained on the i7 with the following topology
 
 ![Topology of system](i7.png)
 
+And here are the timings! 
+
 |                              |  mean  | median | stddev |
 |------------------------------|--------|--------|--------|
 |ASM\_blank                    | 2.3e-06| 2.0e-06| 1.1e-06|
