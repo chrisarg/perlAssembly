@@ -33,7 +33,9 @@ but first load its address to another register that we manipulate at will.
 
 
 #### Results
-Those were obtained on the i7 (see i7.png for the system setup)
+Those were obtained on the i7 with the following topology
+
+![Topology of system](i7.png)
 
 |                              |  mean  | median | stddev |
 |------------------------------|--------|--------|--------|
