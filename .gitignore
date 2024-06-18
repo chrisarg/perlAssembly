@@ -1,0 +1,8 @@
+# Ignore all .csv files
+*.csv
+
+# Ignore specific directory
+./_Inline
+
+# Ignore specific file
+addArrayofIntegers_C.pl
