@@ -2,7 +2,7 @@
 *.csv
 
 # Ignore specific directory
-/_Inline
+_Inline/
 
 # Ignore specific file
 addArrayofIntegers_C.pl
