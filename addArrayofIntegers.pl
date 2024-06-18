@@ -9,15 +9,16 @@ use PDL::IO::Misc;
 use PDL::IO::CSV ':all';
 use PDL::Stats::Basic;
 use Time::HiRes qw(time);
+use Inline C => 'DATA';
 use Inline
   ASM     => 'DATA',
   AS      => 'nasm',
   ASFLAGS => '-f elf64',
   PROTO   => {
-    sum_array                        => 'double(char *,size_t)',
-    sum_array_blank                  => 'double(char *,size_t)',
-    sum_array_doubles                => 'double(char *,size_t)',
-    sum_array_doubles_AVX_unaligned  => 'double(char *,size_t)',
+    sum_array                       => 'double(char *,size_t)',
+    sum_array_blank                 => 'double(char *,size_t)',
+    sum_array_doubles               => 'double(char *,size_t)',
+    sum_array_doubles_AVX_unaligned => 'double(char *,size_t)',
 
   };
 
@@ -34,8 +35,6 @@ my $array_byte_ASM   = pack "c*", @array;
 my $array_double_ASM = pack "d*", @array;
 
 my $ndarray = pdl( \@array );
-
-
 
 $benchmark->add_instance(
     'ASM_wo_alloc' => sub {
@@ -75,6 +74,15 @@ $benchmark->add_instance(
         sum_array_doubles_AVX_unaligned( $array_double_ASM, scalar @array );
     },
 );
+$benchmark->add_instance(
+    'C_doubles_w_alloc' => sub {
+        double_alloc( scalar @array );
+        sum_array_C( $array_double_ASM, scalar @array );
+    },
+    double_free()
+);
+$benchmark->add_instance( 'C_doubles_wo_alloc' =>
+      sub { sum_array_C( $array_double_ASM, scalar @array ) }, );
 $benchmark->add_instance( 'ListUtil'     => sub { sum(@array) }, );
 $benchmark->add_instance( 'PDL_wo_alloc' => sub { $ndarray->sum }, );
 $benchmark->add_instance( 'PDL_w_alloc'  => sub { pdl( \@array )->sum }, );
@@ -127,6 +135,24 @@ unlink 'addArrayofIntegers.csv';
 ## load the CSV file and print a summary of the results using PDL
 
 __DATA__
+__C__
+double * array = NULL;
+void double_alloc(size_t num_elements) {
+    array = malloc(num_elements * sizeof(double));
+    for (int i = 0; i < num_elements; i++) {
+        array[i] = rand() % 200 - 100;
+    }
+}
+void double_free() {
+    free(array);
+}
+double sum_array_C(char *array, size_t length) {
+    double sum = 0.0;
+    for (size_t i = 0; i < length; i++) {
+        sum += array[i];
+    }
+    return sum;
+}
 __ASM__
 NSE    equ 4 ; number of SIMD double elements per iteration
 DOUBLE equ 8 ; number of bytes per double

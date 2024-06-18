@@ -17,10 +17,10 @@ Explore multiple equivalent ways to add *large* arrays of short integers (-100 t
 * ListUtil: sum function from list utilities
 * PDL : uses summation in PDL
 
-Varieties w\_alloc : allocate memory for each iteration to test the speed of pack, those marked
+Scenarios w\_alloc : allocate memory for each iteration to test the speed of pack, those marked
 as wo\_alloc, use a pre-computed data structure to pass the array to the underlying code. 
-Benchmarks of the first variety give the true cost of offloading summation to of a Perl array to a given 
-function when the source data are in Perl. Timing the second variety benchmarks speed of the
+Benchmarks of the first scenario give the true cost of offloading summation to of a Perl array to a given 
+function when the source data are in Perl. Timing the second scenario benchmarks speed of the
 underlying implementation.
 
 The script illustrates 
@@ -53,13 +53,50 @@ And here are the timings!
 |PDL\_w\_alloc                 | 2.1e-02| 2.1e-02| 6.7e-04|
 |PDL\_wo\_alloc                | 9.2e-04| 9.0e-04| 3.9e-05|
 
+Let's say we wanted to do this toy experiment in pure C (using Inline::C of course!)
+```C
+double * array = NULL;
+void double_alloc(size_t num_elements) {
+    array = malloc(num_elements * sizeof(double));
+    for (int i = 0; i < num_elements; i++) {
+        array[i] = rand() % 200 - 100;
+    }
+}
+void double_free() {
+    free(array);
+}
+double sum_array_C(char *array, size_t length) {
+    double sum = 0.0;
+    for (size_t i = 0; i < length; i++) {
+        sum += array[i];
+    }
+    return sum;
+}
+```
+
+Here are the timing results:
+
+|                              |  mean  | median | stddev |
+|------------------------------|--------|--------|--------|
+|C\_doubles\_w\_alloc          |1.3e-02 |1.3e-02 | 2.8e-04|
+|C\_doubles\_wo\_alloc         |1.3e-03 |1.3e-03 | 5.1e-05|
+
 #### Discussion of the addArrayofIntegers.pl example
-For the example considered here, it makes ZERO senso to offload a calculation as simple as a 
+* For calculations such as this, the price that must be paid is all in memory currency: it
+takes time to generate these large arrays, and for code with low arithmetic intensity this
+time dominates the numeric calculation time.
+* Look how insanely effective sum in List::Util is : even though it has to walk the Perl 
+array whose elements (the *doubles*, not the AV*) are not stored in a contiguous area in memory,
+it is no more than 3x slower than the equivalent C code  C\_doubles\_wo\_alloc. 
+* Look how optimized PDL is compared to the C code for both memory scenarios. 
+* For the example considered here, it thus makes ZERO senso to offload a calculation as simple as a 
 summation because ListUtil is already within 15% of the assembly solution (at a latter iteration
 we will also test AVX2 and AVX512 packed addition to see if we can improve the results). 
-If however, one was managing the array, not as a Perl array, but as an area in memory through 
+* If however, one was managing the array, not as a Perl array, but as an area in memory through 
 a Perl object, then one COULD consider offloading. It may be fun to consider an example in 
 which one adds the output of a function that has an efficient PDL and assembly implementation
-to see how the calculus changes (in the to-do list for now)
+to see how the calculus changes (in the to-do list for now).
+
+
 ### Disclaimer
 The code here is NOT meant to be portable. I code in Linux and in x86-64, so if you are looking into Window's ABI or ARM, you will be disappointed. But as my knowledge of ARM assembly grows, I intend to rewrite some examples in Arm assembly!
