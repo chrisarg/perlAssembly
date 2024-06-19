@@ -8,7 +8,7 @@ This is probably one of the things that should never be allowed to exist, but wh
 ##### Script: addIntegers.pl
 Simple integer addition in Perl - this is the Hellow World version of this git repo
 
-### The sum of an array of Integers
+### The sum of an array of integers
 ##### Scripts: addArrayofIntegers.pl & addArrayOfIntegers\_C.pl
 Explore multiple equivalent ways to add *large* arrays of short integers (-100 to 100 in this implementat) in Perl:
 * ASM\_blank : tests the speed of calling ASM from Perl (no computations are done)
@@ -90,7 +90,7 @@ Here are the timings!
 |C\_SIMD\_w\_alloc             |4.1e-03 | 4.0e-03| 2.4e-04|
 |C\_SIMD\_wo\_alloc            |5.0e-04 | 5.0e-04| 8.9e-05|
 
-#### Discussion of the addArrayofIntegers.pl example
+#### Discussion of the sum of an array of integers example
 * For calculations such as this, the price that must be paid is all in memory currency: it
 takes time to generate these large arrays, and for code with low arithmetic intensity this
 time dominates the numeric calculation time.
