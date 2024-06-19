@@ -36,6 +36,7 @@ my $array_double_ASM = pack "d*", @array;
 
 my $ndarray = pdl( \@array );
 
+
 $benchmark->add_instance(
     'ASM_wo_alloc' => sub {
         sum_array( $array_byte_ASM, scalar @array );
@@ -76,10 +77,9 @@ $benchmark->add_instance(
 );
 $benchmark->add_instance(
     'C_doubles_w_alloc' => sub {
-        double_alloc( scalar @array );
+        my $array_double_ASM = pack "d*", @array;
         sum_array_C( $array_double_ASM, scalar @array );
     },
-    double_free()
 );
 $benchmark->add_instance( 'C_doubles_wo_alloc' =>
       sub { sum_array_C( $array_double_ASM, scalar @array ) }, );
@@ -136,18 +136,10 @@ unlink 'addArrayofIntegers.csv';
 
 __DATA__
 __C__
-double * array = NULL;
-void double_alloc(size_t num_elements) {
-    array = malloc(num_elements * sizeof(double));
-    for (int i = 0; i < num_elements; i++) {
-        array[i] = rand() % 200 - 100;
-    }
-}
-void double_free() {
-    free(array);
-}
-double sum_array_C(char *array, size_t length) {
+
+double sum_array_C(char *array_in, size_t length) {
     double sum = 0.0;
+    double * array = (double *) array_in;
     for (size_t i = 0; i < length; i++) {
         sum += array[i];
     }

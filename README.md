@@ -4,10 +4,12 @@ This is probably one of the things that should never be allowed to exist, but wh
 
 ## x86-64 examples
 
-### addIntegers.pl
+### Adding Two Integers
+##### Script: addIntegers.pl
 Simple integer addition in Perl - this is the Hellow World version of this git repo
 
-### addArrayofIntegers.pl
+### The sum of an array of Integers
+##### Scripts: addArrayofIntegers.pl & addArrayOfIntegers\_C.pl
 Explore multiple equivalent ways to add *large* arrays of short integers (-100 to 100 in this implementat) in Perl:
 * ASM\_blank : tests the speed of calling ASM from Perl (no computations are done)
 * ASM : passes the integers as bytes and then uses conversion operations and scalar floating point addition
@@ -54,19 +56,11 @@ And here are the timings!
 |PDL\_wo\_alloc                | 9.2e-04| 9.0e-04| 3.9e-05|
 
 Let's say we wanted to do this toy experiment in pure C (using Inline::C of course!)
+This code obtains the integers as a packed "string" of doubles and forms the sum in C
 ```C
-double * array = NULL;
-void double_alloc(size_t num_elements) {
-    array = malloc(num_elements * sizeof(double));
-    for (int i = 0; i < num_elements; i++) {
-        array[i] = rand() % 200 - 100;
-    }
-}
-void double_free() {
-    free(array);
-}
-double sum_array_C(char *array, size_t length) {
+double sum_array_C(char *array_in, size_t length) {
     double sum = 0.0;
+    double * array = (double *) array_in;
     for (size_t i = 0; i < length; i++) {
         sum += array[i];
     }
@@ -78,8 +72,23 @@ Here are the timing results:
 
 |                              |  mean  | median | stddev |
 |------------------------------|--------|--------|--------|
-|C\_doubles\_w\_alloc          |1.3e-02 |1.3e-02 | 2.8e-04|
-|C\_doubles\_wo\_alloc         |1.3e-03 |1.3e-03 | 5.1e-05|
+|C\_doubles\_w\_alloc          |4.1e-03 |4.1e-03 | 2.3e-04|
+|C\_doubles\_wo\_alloc         |9.0e-04 |8.7e-04 | 4.6e-05|
+
+
+What if we used SIMD directives and parallel loop constructs in OpenMP? This was done in
+the file addArrayOfIntegers\_C.pl. All three combinations were tested, i.e. SIMD directives
+alone (the C equivalent of the AVX code), OpenMP parallel loop threads and SIMD+OpenMP.
+Here are the timings!
+
+|                              |  mean  | median | stddev |
+|------------------------------|--------|--------|--------|
+|C\_OMP\_w\_alloc              |4.0e-03 | 3.7e-03| 1.4e-03|
+|C\_OMP\_wo\_alloc             |3.1e-04 | 2.3e-04| 9.5e-04|
+|C\_SIMD\_OMP\_w\_alloc        |4.0e-03 | 3.8e-03| 8.6e-04|
+|C\_SIMD\_OMP\_wo\_alloc       |3.1e-04 | 2.5e-04| 8.5e-04|
+|C\_SIMD\_w\_alloc             |4.1e-03 | 4.0e-03| 2.4e-04|
+|C\_SIMD\_wo\_alloc            |5.0e-04 | 5.0e-04| 8.9e-05|
 
 #### Discussion of the addArrayofIntegers.pl example
 * For calculations such as this, the price that must be paid is all in memory currency: it
@@ -88,7 +97,11 @@ time dominates the numeric calculation time.
 * Look how insanely effective sum in List::Util is : even though it has to walk the Perl 
 array whose elements (the *doubles*, not the AV*) are not stored in a contiguous area in memory,
 it is no more than 3x slower than the equivalent C code  C\_doubles\_wo\_alloc. 
-* Look how optimized PDL is compared to the C code for both memory scenarios. 
+* Look how optimized PDL is compared to the C code in the scenario without memory allocation.
+* Manual SIMD coded in assembly is 40% faster than the equivalent SIMD code in OpenMP (but it is
+much more painful to write)
+* The threaded OpenMP version achieved equivalent performance to the single thread AVX assembly
+programs, with no obvious improvement from combining SIMD+parallel loop for pragmas in OpenMP. 
 * For the example considered here, it thus makes ZERO senso to offload a calculation as simple as a 
 summation because ListUtil is already within 15% of the assembly solution (at a latter iteration
 we will also test AVX2 and AVX512 packed addition to see if we can improve the results). 
