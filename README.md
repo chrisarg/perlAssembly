@@ -6,7 +6,7 @@ This is probably one of the things that should never be allowed to exist, but wh
 
 ### Adding Two Integers
 ##### Script: addIntegers.pl
-Simple integer addition in Perl - this is the Hellow World version of this git repo
+Simple integer addition in Perl - this is the Hello World version of this git repo
 
 ### The sum of an array of integers
 ##### Scripts: addArrayofIntegers.pl & addArrayOfIntegers\_C.pl
