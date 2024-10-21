@@ -110,6 +110,18 @@ a Perl object, then one COULD consider offloading. It may be fun to consider an 
 which one adds the output of a function that has an efficient PDL and assembly implementation
 to see how the calculus changes (in the to-do list for now).
 
+### Parallel reductions over numerical data using ListUtil , Inline and OpenMP
+##### Script: ListUtil_OMP.pl and analyze_ListUtil_OMP.R
+Exploration of reductions for numerical data using Perl Loops, Inline and OpenMP
+Version 0.01 was created for the [London 2024 Perl and Raku Workshop](https://act.yapc.eu/lpw2024/) on a Xeon E2597v4 with the
+following topology and empirical roofline diagrams
+![image](https://github.com/user-attachments/assets/aa1cfde3-8f0d-4d22-b9f6-29fc2d5884c0)
+![image](https://github.com/user-attachments/assets/6c93e210-33d7-460c-92b7-5483a0460ff1)
+
+Write up of the scenario and additional results will be uploaded after the workup. 
+Version 0.02 will likely drop _after_ the [Winter 2024 Perl Community conference](https://science.perlcommunity.org/spj).
+
+
 
 ### Disclaimer
 The code here is NOT meant to be portable. I code in Linux and in x86-64, so if you are looking into Window's ABI or ARM, you will be disappointed. But as my knowledge of ARM assembly grows, I intend to rewrite some examples in Arm assembly!
